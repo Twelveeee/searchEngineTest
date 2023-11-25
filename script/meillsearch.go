@@ -2,9 +2,12 @@ package script
 
 import (
 	"fmt"
+	"net/http"
 	"searchEngineTest/model"
+	"time"
 
 	"github.com/meilisearch/meilisearch-go"
+	vegeta "github.com/tsenart/vegeta/lib"
 	"github.com/urfave/cli/v2"
 )
 
@@ -14,6 +17,43 @@ func meillSearchGetClient(config *model.Config) *meilisearch.Client {
 		APIKey: config.MeillSearch.APIKey,
 	})
 	return client
+}
+
+// 创建索引
+func MeillSearchCreateIndexAction(ctx *cli.Context) error {
+	config, err := model.InitConfig(ctx)
+	if err != nil {
+		return err
+	}
+	index := config.MeillSearch.IndexName
+	client := meillSearchGetClient(config)
+
+	indexConfig := &meilisearch.IndexConfig{
+		Uid:        index,
+		PrimaryKey: "Rid",
+	}
+	res, err := client.CreateIndex(indexConfig)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("create MeillSearch index  status:%s TaskUID: %v\n", res.Status, res.TaskUID)
+
+	searchableAttributes := []string{
+		"Tags",
+		"Author",
+		"Name",
+		"Full_name",
+		"Title",
+		"Description",
+		"Summary",
+	}
+	res, err = client.Index(index).UpdateSearchableAttributes(&searchableAttributes)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("update MeillSearch index  status:%s TaskUID: %v\n", res.Status, res.TaskUID)
+
+	return nil
 }
 
 // 导入数据
@@ -46,7 +86,7 @@ func MeillSearchImportAction(ctx *cli.Context) error {
 }
 
 // 搜索一次
-func MeillSearchOnceAction(ctx *cli.Context) error {
+func MeillSearchSearchAction(ctx *cli.Context) error {
 	config, err := model.InitConfig(ctx)
 	if err != nil {
 		return err
@@ -91,39 +131,44 @@ func MeillSearchDeleteIndexAction(ctx *cli.Context) error {
 	return nil
 }
 
-// 创建索引
-func MeillSearchCreateIndexAction(ctx *cli.Context) error {
+// 压力测试
+func MeillSearchTestAction(ctx *cli.Context) error {
 	config, err := model.InitConfig(ctx)
 	if err != nil {
 		return err
 	}
-	index := config.MeillSearch.IndexName
-	client := meillSearchGetClient(config)
 
-	indexConfig := &meilisearch.IndexConfig{
-		Uid:        index,
-		PrimaryKey: "Rid",
-	}
-	res, err := client.CreateIndex(indexConfig)
-	if err != nil {
+	url := config.MeillSearch.Host + "/indexes/article/search"
+	Auth := []string{"Bearer " + config.MeillSearch.APIKey}
+
+	body := `{
+		"q": "压力测试",
+		"attributesToHighlight": [
+			"*"
+		],
+		"limit": 10,
+		"offset": 0
+	}`
+
+	targeter := vegeta.NewStaticTargeter(vegeta.Target{
+		Method: "POST",
+		URL:    url,
+		Body:   []byte(body),
+		Header: http.Header{
+			"Content-Type":         []string{"application/json"},
+			"Cache-Control":        []string{"no-cache"},
+			"Authorization":        Auth,
+			"Pragma":               []string{"no-cache"},
+			"X-Meilisearch-Client": []string{"Meilisearch mini-dashboard (v0.2.11) ; Meilisearch instant-meilisearch (v0.11.1) ; Meilisearch JavaScript (v0.31.1)"},
+		},
+	})
+
+	rate := vegeta.Rate{Freq: config.TestRate.PerSecond, Per: time.Second}
+	duration := time.Duration(config.TestRate.Duration) * time.Second
+
+	if err := pressureTest(targeter, rate, duration); err != nil {
 		return err
 	}
-	fmt.Printf("create MeillSearch index  status:%s TaskUID: %v\n", res.Status, res.TaskUID)
-
-	searchableAttributes := []string{
-		"Tags",
-		"Author",
-		"Name",
-		"Full_name",
-		"Title",
-		"Description",
-		"Summary",
-	}
-	res, err = client.Index(index).UpdateSearchableAttributes(&searchableAttributes)
-	if err != nil {
-		return err
-	}
-	fmt.Printf("update MeillSearch index  status:%s TaskUID: %v\n", res.Status, res.TaskUID)
 
 	return nil
 }

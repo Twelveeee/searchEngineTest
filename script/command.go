@@ -4,11 +4,11 @@ import "github.com/urfave/cli/v2"
 
 var Commands = []*cli.Command{
 	&MeillSearchImportCommand,
-	&MeillSearchOnceCommand,
+	&MeillSearchSearchCommand,
 	&MeillSearchDeleteIndexCommand,
 	&MeillSearchTestCommand,
 	&TypeSenseImportCommand,
-	&TypeSenseOnceCommand,
+	&TypeSenseSearchCommand,
 }
 
 var Flags = []cli.Flag{
@@ -17,45 +17,45 @@ var Flags = []cli.Flag{
 
 var MeillSearchImportCommand = cli.Command{
 	Name:    "MeillSearchImport",
-	Aliases: []string{"msi"},
+	Aliases: []string{"mi"},
 	Usage:   "init MeillSearch data",
 	Action:  MeillSearchImportAction,
 }
 
-var MeillSearchOnceCommand = cli.Command{
-	Name:    "MeillSearchOnce",
-	Aliases: []string{"mso"},
+var MeillSearchSearchCommand = cli.Command{
+	Name:    "MeillSearchSearch",
+	Aliases: []string{"ms"},
 	Usage:   "search MeillSearch data once",
 	Flags:   searchOnceFlags,
-	Action:  MeillSearchOnceAction,
+	Action:  MeillSearchSearchAction,
 }
 
 var MeillSearchDeleteIndexCommand = cli.Command{
 	Name:    "MeillSearchDeleteIndex",
-	Aliases: []string{"msdi"},
+	Aliases: []string{"mdi"},
 	Usage:   "delete MeillSearch index",
 	Action:  MeillSearchDeleteIndexAction,
 }
 var MeillSearchTestCommand = cli.Command{
 	Name:    "MeillSearchTest",
-	Aliases: []string{"mst"},
+	Aliases: []string{"mt"},
 	Usage:   "test MeillSearch",
 	Action:  MeillSearchTestAction,
 }
 
 var TypeSenseImportCommand = cli.Command{
 	Name:    "TypeSenseImport",
-	Aliases: []string{"tsi"},
+	Aliases: []string{"ti"},
 	Usage:   "init TypeSense data",
 	Action:  TypeSenseImportAction,
 }
 
-var TypeSenseOnceCommand = cli.Command{
-	Name:    "TypeSenseOnce",
-	Aliases: []string{"tso"},
+var TypeSenseSearchCommand = cli.Command{
+	Name:    "TypeSenseSearch",
+	Aliases: []string{"ts"},
 	Usage:   "search TypeSense data once",
 	Flags:   searchOnceFlags,
-	Action:  TypeSenseOnceAction,
+	Action:  TypeSenseSearchAction,
 }
 
 var queryFlag = cli.StringFlag{

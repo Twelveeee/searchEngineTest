@@ -17,6 +17,23 @@ func typeSenseGetClient(config *model.Config) *typesense.Client {
 	return client
 }
 
+// 创建索引
+func TypeSenseCreateIndex(ctx *cli.Context) error {
+	config, err := model.InitConfig(ctx)
+	if err != nil {
+		return err
+	}
+	client := typeSenseGetClient(config)
+	schema := typeSenseGetIndexSchema(config)
+	res, err := client.Collections().Create(schema)
+	if err != nil {
+		return err
+	}
+	fmt.Println(res)
+	return nil
+}
+
+// 导入数据
 func TypeSenseImportAction(ctx *cli.Context) error {
 	config, err := model.InitConfig(ctx)
 	if err != nil {
@@ -24,13 +41,6 @@ func TypeSenseImportAction(ctx *cli.Context) error {
 	}
 	index := config.Typesense.IndexName
 	client := typeSenseGetClient(config)
-	// create index
-	schema := typeSenseGetIndexSchema(config)
-	res, err := client.Collections().Create(schema)
-	if err != nil {
-		return err
-	}
-	fmt.Println(res)
 
 	articleList := getJsonDataList("data/data.json")
 
@@ -55,8 +65,8 @@ func TypeSenseImportAction(ctx *cli.Context) error {
 	return nil
 }
 
-// 搜索一次
-func TypeSenseOnceAction(ctx *cli.Context) error {
+// 搜索
+func TypeSenseSearchAction(ctx *cli.Context) error {
 	config, err := model.InitConfig(ctx)
 	if err != nil {
 		return err

@@ -91,7 +91,24 @@ func TypeSenseSearchAction(ctx *cli.Context) error {
 		fmt.Printf("rid: %s name: %s \n", document["Rid"], document["Name"])
 	}
 	return nil
+}
 
+// 删除索引
+func TypeSenseDeleteIndexAction(ctx *cli.Context) error {
+	config, err := model.InitConfig(ctx)
+	if err != nil {
+		return err
+	}
+	index := config.Typesense.IndexName
+	client := typeSenseGetClient(config)
+
+	_, err = client.Collection(index).Delete()
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("delete index success \n")
+	return nil
 }
 
 func typeSenseGetIndexSchema(config *model.Config) *api.CollectionSchema {

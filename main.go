@@ -42,8 +42,6 @@ func main() {
 	app.Flags = script.Flags
 	app.Metadata = Metadata
 
-	// os.Args = append(os.Args, "msi")
-
 	if err := app.Run(os.Args); err != nil {
 		fmt.Printf("run error %v \n", err)
 	}

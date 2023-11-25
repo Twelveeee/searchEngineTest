@@ -85,7 +85,7 @@ func MeillSearchImportAction(ctx *cli.Context) error {
 	return nil
 }
 
-// 搜索一次
+// 搜索
 func MeillSearchSearchAction(ctx *cli.Context) error {
 	config, err := model.InitConfig(ctx)
 	if err != nil {
@@ -122,11 +122,11 @@ func MeillSearchDeleteIndexAction(ctx *cli.Context) error {
 	index := config.MeillSearch.IndexName
 	client := meillSearchGetClient(config)
 
-	res, err := client.DeleteIndex(index)
+	_, err = client.DeleteIndex(index)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("add MeillSearch status:%s TaskUID: %v\n", res.Status, res.TaskUID)
+	fmt.Printf("delete index success \n")
 
 	return nil
 }

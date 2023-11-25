@@ -8,7 +8,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-var version = "v0.0.1 development"
+var version = "v0.0.1"
 
 const appName = "searchEngineTest"
 const appAbout = "Twelveeee"

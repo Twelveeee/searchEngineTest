@@ -1,0 +1,15 @@
+# 导入数据存放文件未知
+DataFile: "./data/data.json"
+MeillSearch:
+    Host:  "http://localhost:7700"
+    APIKey: "aSampleMasterKey"
+    IndexName: "article"
+Typesense:
+    Host:  "http://localhost:8108"
+    APIKey: "xvRbulP1P0Rw3h9ZFuT8yQH0sc35JLLj9SkwGPCyDbrkPDIp"
+    IndexName: "article"
+TestRate:
+    # 每秒次数
+    PerSecond: 10
+    # 持续时间
+    Duration: 2

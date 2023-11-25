@@ -2,8 +2,11 @@ package script
 
 import (
 	"fmt"
+	"net/http"
 	"searchEngineTest/model"
+	"time"
 
+	vegeta "github.com/tsenart/vegeta/lib"
 	"github.com/typesense/typesense-go/typesense"
 	"github.com/typesense/typesense-go/typesense/api"
 	"github.com/typesense/typesense-go/typesense/api/pointer"
@@ -18,18 +21,18 @@ func typeSenseGetClient(config *model.Config) *typesense.Client {
 }
 
 // 创建索引
-func TypeSenseCreateIndex(ctx *cli.Context) error {
+func TypeSenseCreateIndexAction(ctx *cli.Context) error {
 	config, err := model.InitConfig(ctx)
 	if err != nil {
 		return err
 	}
 	client := typeSenseGetClient(config)
 	schema := typeSenseGetIndexSchema(config)
-	res, err := client.Collections().Create(schema)
+	_, err = client.Collections().Create(schema)
 	if err != nil {
 		return err
 	}
-	fmt.Println(res)
+	fmt.Printf("create index success \n")
 	return nil
 }
 
@@ -196,4 +199,41 @@ func typeSenseGetIndexSchema(config *model.Config) *api.CollectionSchema {
 		DefaultSortingField: pointer.String("Stars"),
 	}
 	return schema
+}
+
+// 压力测试
+func TypeSenseTestAction(ctx *cli.Context) error {
+	config, err := model.InitConfig(ctx)
+	if err != nil {
+		return err
+	}
+	index := config.Typesense.IndexName
+
+	// 	curl -H "X-TYPESENSE-API-KEY: ${TYPESENSE_API_KEY}" \
+	// "http://localhost:8108/collections/companies/documents/search\
+	// ?q=stark&query_by=company_name&filter_by=num_employees:>100\
+	// &sort_by=num_employees:desc
+
+	url := config.Typesense.Host + "/collections/" + index + "/documents/search?q=压力测试&query_by=Name,Full_name,Title,Description,Summary&per_page=10"
+	Auth := []string{config.Typesense.APIKey}
+
+	targeter := vegeta.NewStaticTargeter(vegeta.Target{
+		Method: "GET",
+		URL:    url,
+		Header: http.Header{
+			"Content-Type":        []string{"application/json"},
+			"Cache-Control":       []string{"no-cache"},
+			"X-TYPESENSE-API-KEY": Auth,
+			"Pragma":              []string{"no-cache"},
+		},
+	})
+
+	rate := vegeta.Rate{Freq: config.TestRate.PerSecond, Per: time.Second}
+	duration := time.Duration(config.TestRate.Duration) * time.Second
+
+	if err := pressureTest(targeter, rate, duration); err != nil {
+		return err
+	}
+
+	return nil
 }

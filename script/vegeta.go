@@ -16,7 +16,12 @@ func pressureTest(targeter vegeta.Targeter, rate vegeta.ConstantPacer, duration 
 
 	count := 1
 	for res := range attacker.Attack(targeter, rate, duration, "Big Bang!") {
-		fmt.Printf("%d, response:%s \n", count, string(res.Body)[0:100])
+		if len(res.Body) >= 100 {
+			fmt.Printf("%d, response:%s \n", count, string(res.Body)[0:100])
+		} else {
+			fmt.Printf("%d, response:%s \n", count, string(res.Body))
+		}
+
 		count++
 		metrics.Add(res)
 	}

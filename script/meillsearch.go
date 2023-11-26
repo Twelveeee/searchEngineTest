@@ -20,7 +20,7 @@ func meillSearchGetClient(config *model.Config) *meilisearch.Client {
 }
 
 // 创建索引
-func MeillSearchCreateIndexAction(ctx *cli.Context) error {
+func meillSearchCreateIndexAction(ctx *cli.Context) error {
 	config, err := model.InitConfig(ctx)
 	if err != nil {
 		return err
@@ -57,7 +57,7 @@ func MeillSearchCreateIndexAction(ctx *cli.Context) error {
 }
 
 // 导入数据
-func MeillSearchImportAction(ctx *cli.Context) error {
+func meillSearchImportAction(ctx *cli.Context) error {
 	config, err := model.InitConfig(ctx)
 	if err != nil {
 		return err
@@ -86,7 +86,7 @@ func MeillSearchImportAction(ctx *cli.Context) error {
 }
 
 // 搜索
-func MeillSearchSearchAction(ctx *cli.Context) error {
+func meillSearchSearchAction(ctx *cli.Context) error {
 	config, err := model.InitConfig(ctx)
 	if err != nil {
 		return err
@@ -114,7 +114,7 @@ func MeillSearchSearchAction(ctx *cli.Context) error {
 }
 
 // 删除索引
-func MeillSearchDeleteIndexAction(ctx *cli.Context) error {
+func meillSearchDeleteIndexAction(ctx *cli.Context) error {
 	config, err := model.InitConfig(ctx)
 	if err != nil {
 		return err
@@ -132,7 +132,7 @@ func MeillSearchDeleteIndexAction(ctx *cli.Context) error {
 }
 
 // 压力测试
-func MeillSearchTestAction(ctx *cli.Context) error {
+func meillSearchTestAction(ctx *cli.Context) error {
 	config, err := model.InitConfig(ctx)
 	if err != nil {
 		return err

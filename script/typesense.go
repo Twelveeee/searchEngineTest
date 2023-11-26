@@ -21,7 +21,7 @@ func typeSenseGetClient(config *model.Config) *typesense.Client {
 }
 
 // 创建索引
-func TypeSenseCreateIndexAction(ctx *cli.Context) error {
+func typeSenseCreateIndexAction(ctx *cli.Context) error {
 	config, err := model.InitConfig(ctx)
 	if err != nil {
 		return err
@@ -37,7 +37,7 @@ func TypeSenseCreateIndexAction(ctx *cli.Context) error {
 }
 
 // 导入数据
-func TypeSenseImportAction(ctx *cli.Context) error {
+func typeSenseImportAction(ctx *cli.Context) error {
 	config, err := model.InitConfig(ctx)
 	if err != nil {
 		return err
@@ -69,7 +69,7 @@ func TypeSenseImportAction(ctx *cli.Context) error {
 }
 
 // 搜索
-func TypeSenseSearchAction(ctx *cli.Context) error {
+func typeSenseSearchAction(ctx *cli.Context) error {
 	config, err := model.InitConfig(ctx)
 	if err != nil {
 		return err
@@ -97,7 +97,7 @@ func TypeSenseSearchAction(ctx *cli.Context) error {
 }
 
 // 删除索引
-func TypeSenseDeleteIndexAction(ctx *cli.Context) error {
+func typeSenseDeleteIndexAction(ctx *cli.Context) error {
 	config, err := model.InitConfig(ctx)
 	if err != nil {
 		return err
@@ -202,17 +202,12 @@ func typeSenseGetIndexSchema(config *model.Config) *api.CollectionSchema {
 }
 
 // 压力测试
-func TypeSenseTestAction(ctx *cli.Context) error {
+func typeSenseTestAction(ctx *cli.Context) error {
 	config, err := model.InitConfig(ctx)
 	if err != nil {
 		return err
 	}
 	index := config.Typesense.IndexName
-
-	// 	curl -H "X-TYPESENSE-API-KEY: ${TYPESENSE_API_KEY}" \
-	// "http://localhost:8108/collections/companies/documents/search\
-	// ?q=stark&query_by=company_name&filter_by=num_employees:>100\
-	// &sort_by=num_employees:desc
 
 	url := config.Typesense.Host + "/collections/" + index + "/documents/search?q=压力测试&query_by=Name,Full_name,Title,Description,Summary&per_page=10"
 	Auth := []string{config.Typesense.APIKey}

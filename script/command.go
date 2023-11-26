@@ -3,92 +3,52 @@ package script
 import "github.com/urfave/cli/v2"
 
 var Commands = []*cli.Command{
-	&MeillSearchImportCommand,
-	&MeillSearchSearchCommand,
-	&MeillSearchCreateIndexCommand,
-	&MeillSearchDeleteIndexCommand,
-	&MeillSearchTestCommand,
-
-	&TypeSenseImportCommand,
-	&TypeSenseSearchCommand,
-	&TypeSenseCreateIndexCommand,
-	&TypeSenseDeleteIndexCommand,
-	&TypeSenseTestCommand,
+	&importDataCommand,
+	&createIndexCommand,
+	&deleteIndexCommand,
+	&searchCommand,
+	&pressureTestCommand,
 }
 
 var Flags = []cli.Flag{
 	&configFlag,
+	&engineFlag,
 }
 
-var MeillSearchImportCommand = cli.Command{
-	Name:    "MeillSearchImport",
-	Aliases: []string{"mi"},
-	Usage:   "init MeillSearch data",
-	Action:  MeillSearchImportAction,
+var importDataCommand = cli.Command{
+	Name:    "importData",
+	Aliases: []string{"i"},
+	Usage:   "init data",
+	Action:  importDataAction,
 }
 
-var MeillSearchSearchCommand = cli.Command{
-	Name:    "MeillSearchSearch",
-	Aliases: []string{"ms"},
-	Usage:   "search MeillSearch data once",
-	Flags:   searchOnceFlags,
-	Action:  MeillSearchSearchAction,
+var createIndexCommand = cli.Command{
+	Name:    "createIndex",
+	Aliases: []string{"ci"},
+	Usage:   "create index",
+	Action:  createIndexAction,
 }
 
-var MeillSearchCreateIndexCommand = cli.Command{
-	Name:    "MeillSearchCreateIndex",
-	Aliases: []string{"mci"},
-	Usage:   "create MeillSearch index",
-	Action:  MeillSearchCreateIndexAction,
+var deleteIndexCommand = cli.Command{
+	Name:    "deleteIndex",
+	Aliases: []string{"di"},
+	Usage:   "delete index",
+	Action:  deleteIndexAction,
 }
 
-var MeillSearchDeleteIndexCommand = cli.Command{
-	Name:    "MeillSearchDeleteIndex",
-	Aliases: []string{"mdi"},
-	Usage:   "delete MeillSearch index",
-	Action:  MeillSearchDeleteIndexAction,
-}
-var MeillSearchTestCommand = cli.Command{
-	Name:    "MeillSearchTest",
-	Aliases: []string{"mt"},
-	Usage:   "test MeillSearch",
-	Action:  MeillSearchTestAction,
+var searchCommand = cli.Command{
+	Name:    "search",
+	Aliases: []string{"s"},
+	Usage:   "search",
+	Action:  searchAction,
+	Flags:   searchFlags,
 }
 
-var TypeSenseImportCommand = cli.Command{
-	Name:    "TypeSenseImport",
-	Aliases: []string{"ti"},
-	Usage:   "init TypeSense data",
-	Action:  TypeSenseImportAction,
-}
-
-var TypeSenseSearchCommand = cli.Command{
-	Name:    "TypeSenseSearch",
-	Aliases: []string{"ts"},
-	Usage:   "search TypeSense data once",
-	Flags:   searchOnceFlags,
-	Action:  TypeSenseSearchAction,
-}
-
-var TypeSenseCreateIndexCommand = cli.Command{
-	Name:    "TypeSenseCreateIndex",
-	Aliases: []string{"tci"},
-	Usage:   "create TypeSense index",
-	Action:  TypeSenseCreateIndexAction,
-}
-
-var TypeSenseDeleteIndexCommand = cli.Command{
-	Name:    "TypeSenseDeleteIndex",
-	Aliases: []string{"tdi"},
-	Usage:   "delete TypeSense index",
-	Action:  TypeSenseDeleteIndexAction,
-}
-
-var TypeSenseTestCommand = cli.Command{
-	Name:    "TypeSenseTest",
-	Aliases: []string{"tt"},
-	Usage:   "test TypeSense",
-	Action:  TypeSenseTestAction,
+var pressureTestCommand = cli.Command{
+	Name:    "pressureTest",
+	Aliases: []string{"pt"},
+	Usage:   "pressureTest",
+	Action:  pressureTestAction,
 }
 
 var queryFlag = cli.StringFlag{
@@ -105,6 +65,13 @@ var configFlag = cli.StringFlag{
 	Value:   "./config.yaml",
 }
 
-var searchOnceFlags = []cli.Flag{
+var engineFlag = cli.StringFlag{
+	Name:     "engine",
+	Aliases:  []string{"e"},
+	Usage:    "set search engine; m as meillsearch, t as typesense, a as aligolia ,all",
+	Required: true,
+}
+
+var searchFlags = []cli.Flag{
 	&queryFlag,
 }

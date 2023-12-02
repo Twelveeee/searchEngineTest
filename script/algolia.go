@@ -79,11 +79,12 @@ func algoliaSearchAction(ctx *cli.Context) error {
 	fmt.Printf("algolia: TotalHits: %d \n", ret.NbHits)
 	for _, hit := range ret.Hits {
 		document := hit
-		fmt.Printf("algolia: rid: %s name: %s \n", document["Rid"], document["Name"])
+		fmt.Printf("url: https://hellogithub.com/repository/%s name: %s \n", document["Rid"], document["Name"])
 	}
 	if err != nil {
 		return err
 	}
+	fmt.Printf("algolia: search success \n\n")
 	return nil
 }
 

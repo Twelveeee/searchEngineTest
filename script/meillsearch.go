@@ -36,7 +36,7 @@ func meillSearchCreateIndexAction(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("create MeillSearch index  status:%s TaskUID: %v\n", res.Status, res.TaskUID)
+	fmt.Printf("MeillSearch: create index  status:%s TaskUID: %v\n", res.Status, res.TaskUID)
 
 	searchableAttributes := []string{
 		"Tags",
@@ -51,7 +51,7 @@ func meillSearchCreateIndexAction(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("update MeillSearch index  status:%s TaskUID: %v\n", res.Status, res.TaskUID)
+	fmt.Printf("MeillSearch: update index  status:%s TaskUID: %v\n", res.Status, res.TaskUID)
 
 	return nil
 }
@@ -72,14 +72,14 @@ func meillSearchImportAction(ctx *cli.Context) error {
 		return err
 	}
 	for _, res := range resList {
-		fmt.Printf("add MeillSearch status:%s TaskUID: %v\n", res.Status, res.TaskUID)
+		fmt.Printf("MeillSearch: add status:%s TaskUID: %v\n", res.Status, res.TaskUID)
 
 		res2, err := client.GetTask(res.TaskUID)
 
 		if err != nil {
 			return err
 		}
-		fmt.Printf("add MeillSearch result status:%s \n", res2.Status)
+		fmt.Printf("MeillSearch: add result status:%s \n", res2.Status)
 	}
 
 	return nil
@@ -105,11 +105,12 @@ func meillSearchSearchAction(ctx *cli.Context) error {
 		return err
 	}
 
-	fmt.Printf("TotalHits: %d \n", ret.EstimatedTotalHits)
+	fmt.Printf("MeillSearch: TotalHits: %d \n", ret.EstimatedTotalHits)
 	for _, hit := range ret.Hits {
 		document := hit.(map[string]interface{})
-		fmt.Printf("rid: %s name: %s \n", document["Rid"], document["Name"])
+		fmt.Printf("url: https://hellogithub.com/repository/%s name: %s \n", document["Rid"], document["Name"])
 	}
+	fmt.Printf("MeillSearch: search success \n\n")
 	return nil
 }
 
@@ -126,7 +127,7 @@ func meillSearchDeleteIndexAction(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("delete index success \n")
+	fmt.Printf("MeillSearch: delete index success \n")
 
 	return nil
 }

@@ -32,7 +32,7 @@ func typeSenseCreateIndexAction(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("create index success \n")
+	fmt.Printf("Typesense: create index success \n")
 	return nil
 }
 
@@ -62,7 +62,7 @@ func typeSenseImportAction(ctx *cli.Context) error {
 		return err
 	}
 	for _, importRes := range importResList {
-		fmt.Printf("import stauts %v document %s\n", importRes.Success, importRes.Document)
+		fmt.Printf("Typesense: import stauts %v document %s\n", importRes.Success, importRes.Document)
 	}
 
 	return nil
@@ -88,11 +88,12 @@ func typeSenseSearchAction(ctx *cli.Context) error {
 		return err
 	}
 
-	fmt.Printf("TotalHits: %d \n", *ret.Found)
+	fmt.Printf("Typesense: TotalHits: %d \n", *ret.Found)
 	for _, hit := range *ret.Hits {
 		document := *hit.Document
-		fmt.Printf("rid: %s name: %s \n", document["Rid"], document["Name"])
+		fmt.Printf("url: https://hellogithub.com/repository/%s name: %s \n", document["Rid"], document["Name"])
 	}
+	fmt.Printf("Typesense: search success \n\n")
 	return nil
 }
 
@@ -110,7 +111,7 @@ func typeSenseDeleteIndexAction(ctx *cli.Context) error {
 		return err
 	}
 
-	fmt.Printf("delete index success \n")
+	fmt.Printf("Typesense: delete index success \n")
 	return nil
 }
 

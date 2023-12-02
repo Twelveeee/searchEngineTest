@@ -8,7 +8,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-var version = "v0.0.1"
+var version = "v0.0.2"
 
 const appName = "searchEngineTest"
 const appAbout = "Twelveeee"
@@ -46,6 +46,6 @@ func main() {
 		fmt.Printf("run error %v \n", err)
 	}
 
-	fmt.Printf("run done \n")
+	fmt.Printf("====================================\n")
 
 }

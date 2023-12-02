@@ -66,10 +66,9 @@ var configFlag = cli.StringFlag{
 }
 
 var engineFlag = cli.StringFlag{
-	Name:     "engine",
-	Aliases:  []string{"e"},
-	Usage:    "set search engine; m as meillsearch, t as typesense, a as aligolia ,all",
-	Required: true,
+	Name:    "engine",
+	Aliases: []string{"e"},
+	Usage:   "set search engine; m as meillsearch, t as typesense, a as aligolia ,all",
 }
 
 var searchFlags = []cli.Flag{

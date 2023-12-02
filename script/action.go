@@ -7,117 +7,86 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func importDataAction(ctx *cli.Context) error {
+var createIndexActionConf = map[string]func(*cli.Context) error{
+	"meillsearch": meillSearchCreateIndexAction,
+	"typesense":   typeSenseCreateIndexAction,
+	"algolia":     algoliaCreateIndexAction,
+}
+
+var importDataActionConf = map[string]func(*cli.Context) error{
+	"meillsearch": meillSearchImportAction,
+	"typesense":   typeSenseImportAction,
+	"algolia":     algoliaImportAction,
+}
+
+var searchActionConf = map[string]func(*cli.Context) error{
+	"meillsearch": meillSearchSearchAction,
+	"typesense":   typeSenseSearchAction,
+	"algolia":     algoliaSearchAction,
+}
+
+var deleteIndexActionConf = map[string]func(*cli.Context) error{
+	"meillsearch": meillSearchDeleteIndexAction,
+	"typesense":   typeSenseDeleteIndexAction,
+	"algolia":     algoliaDeleteIndexAction,
+}
+
+var pressureTestActionConf = map[string]func(*cli.Context) error{
+	"meillsearch": meillSearchTestAction,
+	"typesense":   typeSenseTestAction,
+	"algolia":     algoliaTestAction,
+}
+
+func getEngineName(ctx *cli.Context) string {
 	engine := ctx.String("engine")
 	engine = strings.ToLower(engine)
 	switch engine {
 	case "meillsearch", "ms", "m":
-		return meillSearchImportAction(ctx)
+		return "meillsearch"
 	case "typesense", "ts", "t":
-		return typeSenseImportAction(ctx)
-	case "all":
-		err := meillSearchImportAction(ctx)
-		if err != nil {
-			return err
-		}
-		err = typeSenseImportAction(ctx)
-		if err != nil {
-			return err
-		}
-		return nil
+		return "typesense"
+	case "algolia", "a":
+		return "algolia"
 	default:
-		return fmt.Errorf("engine %s not support", engine)
+		return engine
 	}
+}
+
+func importDataAction(ctx *cli.Context) error {
+	return executeAction(ctx, importDataActionConf)
 }
 
 func createIndexAction(ctx *cli.Context) error {
-	engine := ctx.String("engine")
-	engine = strings.ToLower(engine)
-	switch engine {
-	case "meillsearch", "ms", "m":
-		return meillSearchCreateIndexAction(ctx)
-	case "typesense", "ts", "t":
-		return typeSenseCreateIndexAction(ctx)
-	case "all":
-		err := meillSearchCreateIndexAction(ctx)
-		if err != nil {
-			return err
-		}
-		err = typeSenseCreateIndexAction(ctx)
-		if err != nil {
-			return err
-		}
-		return nil
-	default:
-		return fmt.Errorf("engine %s not support", engine)
-	}
+	return executeAction(ctx, createIndexActionConf)
 }
 
 func deleteIndexAction(ctx *cli.Context) error {
-	engine := ctx.String("engine")
-	engine = strings.ToLower(engine)
-	switch engine {
-	case "meillsearch", "ms", "m":
-		return meillSearchDeleteIndexAction(ctx)
-	case "typesense", "ts", "t":
-		return typeSenseDeleteIndexAction(ctx)
-	case "all":
-		err := meillSearchDeleteIndexAction(ctx)
-		if err != nil {
-			return err
-		}
-		err = typeSenseDeleteIndexAction(ctx)
-		if err != nil {
-			return err
-		}
-		return nil
-	default:
-		return fmt.Errorf("engine %s not support", engine)
-	}
+	return executeAction(ctx, deleteIndexActionConf)
 }
 
 func searchAction(ctx *cli.Context) error {
-	engine := ctx.String("engine")
-	engine = strings.ToLower(engine)
-	switch engine {
-	case "meillsearch", "ms", "m":
-		return meillSearchSearchAction(ctx)
-	case "typesense", "ts", "t":
-		return typeSenseSearchAction(ctx)
-	case "all":
-		err := meillSearchSearchAction(ctx)
-		if err != nil {
-			return err
-		}
-		err = typeSenseSearchAction(ctx)
-		if err != nil {
-			return err
-		}
-		return nil
-	default:
-		return fmt.Errorf("engine %s not support", engine)
-	}
+	return executeAction(ctx, searchActionConf)
 }
 
 func pressureTestAction(ctx *cli.Context) error {
-	engine := ctx.String("engine")
-	engine = strings.ToLower(engine)
-	switch engine {
-	case "meillsearch", "ms", "m":
-		return meillSearchTestAction(ctx)
-	case "typesense", "ts", "t":
-		return typeSenseTestAction(ctx)
-	case "all":
-		err := meillSearchTestAction(ctx)
-		if err != nil {
-			return err
-		}
-		err = typeSenseTestAction(ctx)
-		if err != nil {
-			return err
+	return executeAction(ctx, pressureTestActionConf)
+}
+
+func executeAction(ctx *cli.Context, actions map[string]func(*cli.Context) error) error {
+	engine := getEngineName(ctx)
+	if engine == "all" {
+		for _, action := range actions {
+			err := action(ctx)
+			if err != nil {
+				return err
+			}
 		}
 		return nil
-	default:
-		return fmt.Errorf("engine %s not support", engine)
 	}
+
+	action, ok := actions[engine]
+	if !ok {
+		return fmt.Errorf("engine %s not supported", engine)
+	}
+	return action(ctx)
 }

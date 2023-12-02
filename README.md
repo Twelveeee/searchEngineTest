@@ -70,31 +70,28 @@ USAGE:
    searchEngineTest [global options] command [command options] [arguments...]
 
 VERSION:
-   v0.0.1 development
+   v0.0.2
 
 DESCRIPTION:
    搜索引擎测试
 
 COMMANDS:
-   MeillSearchImport, mi        init MeillSearch data
-   MeillSearchSearch, ms        search MeillSearch data once
-   MeillSearchCreateIndex, mci  create MeillSearch index
-   MeillSearchDeleteIndex, mdi  delete MeillSearch index
-   MeillSearchTest, mt          test MeillSearch
-   TypeSenseImport, ti          init TypeSense data
-   TypeSenseSearch, ts          search TypeSense data once
-   TypeSenseCreateIndex, tci    create TypeSense index
-   TypeSenseDeleteIndex, tdi    delete TypeSense index
-   TypeSenseTest, tt            test TypeSense
-   help, h                      Shows a list of commands or help for one command
+   importData, i     init data
+   createIndex, ci   create index
+   deleteIndex, di   delete index
+   search, s         search
+   pressureTest, pt  pressureTest
+   help, h           Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
    --config value, -c value  config file path (default: "./config.yaml")
+   --engine value, -e value  set search engine; m as meillsearch, t as typesense, a as aligolia ,all
    --help, -h                show help
    --version, -v             print the version
 
 COPYRIGHT:
    (c) 2023 Twelveeee @ Twelveeee
+====================================
 ```
 
 
@@ -111,6 +108,10 @@ MeillSearch:
 Typesense:
     Host:  "http://localhost:8108"
     APIKey: "xvRbulP1P0Rw3h9ZFuT8yQH0sc35JLLj9SkwGPCyDbrkPDIp"
+    IndexName: "article"
+Algolia:
+    ApplicationId: ""
+    AdminApiKey: ""
     IndexName: "article"
 # 测试
 TestRate:
@@ -165,11 +166,13 @@ meilisearch --master-key="aSampleMasterKey"
 ### 数据导入
 
 ```bash
-$ ./searchEngineTest mci
+# 创建索引 
+$ ./searchEngineTest -engine 'm' ci
 create index success 
 run done
 
-$ ./searchEngineTest mi
+# 导入数据
+$ ./searchEngineTest -engine 'm' i
 add MeillSearch status:enqueued TaskUID: 9
 add MeillSearch result status:processing 
 add MeillSearch status:enqueued TaskUID: 10
@@ -190,7 +193,7 @@ run done
 ### 搜索
 
 ```bash
-$ ./searchEngineTest ms -q "Redis"
+$ ./searchEngineTest -engine 'm' s -q "Redis"
 TotalHits: 55 
 rid: f18f16d7dd944a36971f8746b7079c87 name: redis 
 rid: 025ed78aac4c4dc79518bd99a1c4e835 name: cachecloud 
@@ -210,7 +213,7 @@ run don
 ### 压力测试
 
 ```bash
-$ ./searchEngineTest mt
+$ ./searchEngineTest -engine 'm' t
 start pressure test, duration:1m0s , rate: 100/s
 ...
 5999, response:{"hits":[{"Rid":"f4164844fb7549f7b579d59d19550ca4","Tags":"Elasticsearch CLI Python 测试","Author" 
@@ -257,11 +260,13 @@ vim /etc/typesense/typesense-server.ini
 ### 数据导入
 
 ```bash
-$ ./searchEngineTest tci
+# 创建索引
+$ ./searchEngineTest  -engine 's' ci
 create index success 
 run done
 
-$ ./searchEngineTest ti
+# 创建导入数据
+$ ./searchEngineTest  -engine 's' i
 ...
 import stauts true document 
 run done 
@@ -272,7 +277,7 @@ run done
 ### 搜索
 
 ```bash
-$ ./searchEngineTest ts -q "Redis"
+$ ./searchEngineTest -engine 's' s -q "Redis"
 TotalHits: 45 
 rid: f18f16d7dd944a36971f8746b7079c87 name: redis 
 rid: 152adb02e91a4f9aa7f1f094732ddf00 name: redis-3.0-annotated 
@@ -292,7 +297,7 @@ run done
 ### 压力测试
 
 ```bash
- ./searchEngineTest tt
+ ./searchEngineTest -engine 's' t
 start pressure test, duration:1m0s , rate: 100/s
 ...
 6000, response:{"facet_counts":[],"found":3,"hits":[{"document":{"Author":"apache","Author_avatar":"https://img.hel 
@@ -317,11 +322,151 @@ run done
 
 
 
+## Algolia
+
+### 搭建
+
+去 https://www.algolia.com/  创建账户
+
+然后获取 ApplicationId 和 AdminApiKey
+
+### 数据导入
+
+```bash
+# 创建索引 
+$ ./searchEngineTest -engine 'a' ci
+create index success 
+run done
+
+# 导入数据
+$ ./searchEngineTest -engine 'a' i
+algolia: add data status:success TaskUID: 11
+algolia: add data status:success TaskUID: 12
+algolia: add data status:success TaskUID: 13
+```
+
+
+
+### 搜索
+
+```bash
+$ ./searchEngineTest -e 'a' s -q 'Redis'
+algolia: TotalHits: 55 
+f951d9abf7db495e99cbc666a70d8ce7 name: pottery 
+...
+algolia: search success 
+```
+
+
+
+### 压力测试
+
+没有压力测试
 
 
 
 
 
+# 搜索准确度测试
+
+case :
+
+1. git的开源项目
+2. 下载歌曲
+3. C++开源游戏
+
+
+
+```bash
+$ ./searchEngineTest -e 'all' s -q 'git的开源项目'
+algolia: TotalHits: 3 
+url: https://hellogithub.com/repository/9f0ede723e544988a436471d207f1f8c name: git-history 
+url: https://hellogithub.com/repository/4e3b67f2fa3546b2b3d2aece375322f3 name: halo 
+url: https://hellogithub.com/repository/28215d861b284a3f8fbcfe3d7be6459c name: git-point 
+algolia: search success 
+
+MeillSearch: TotalHits: 3 
+url: https://hellogithub.com/repository/9f0ede723e544988a436471d207f1f8c name: git-history 
+url: https://hellogithub.com/repository/4e3b67f2fa3546b2b3d2aece375322f3 name: halo 
+url: https://hellogithub.com/repository/28215d861b284a3f8fbcfe3d7be6459c name: git-point 
+MeillSearch: search success 
+
+Typesense: TotalHits: 2 
+url: https://hellogithub.com/repository/9f0ede723e544988a436471d207f1f8c name: git-history 
+url: https://hellogithub.com/repository/28215d861b284a3f8fbcfe3d7be6459c name: git-point 
+Typesense: search success 
+
+====================================
+```
+
+
+
+```bash
+./searchEngineTest -e 'all' s -q '下载歌曲'
+algolia: TotalHits: 0 
+algolia: search success 
+
+MeillSearch: TotalHits: 0 
+MeillSearch: search success 
+
+Typesense: TotalHits: 86 
+url: https://hellogithub.com/repository/6fd34a7534dd415cbf8990d73427794c name: downkyi 
+url: https://hellogithub.com/repository/81f5028ecf9740dfaba1bc8903146454 name: BBDown 
+url: https://hellogithub.com/repository/98f1c4c0b02c4ea3b0d73d5f471d6ae4 name: XboxDownload 
+url: https://hellogithub.com/repository/18c6ee9f0f8b4fd0a4959abeb0904554 name: GetSubtitles 
+url: https://hellogithub.com/repository/b9e627e8c6f8488b8c4fa1298ef40fe8 name: youtube-dl 
+url: https://hellogithub.com/repository/559f8650da99482884b94fcb2bec963e name: you-get 
+url: https://hellogithub.com/repository/ba6334592d4b4abd95f1f6e45ef2e899 name: marktext 
+url: https://hellogithub.com/repository/6953bd87668843ae97ca491e1b5fb81a name: Motrix 
+url: https://hellogithub.com/repository/78722011ebf84ea8b1f0a19f2e7a8b2a name: lux 
+url: https://hellogithub.com/repository/e2ba8c6839e843bca2215efdea936107 name: Kingfisher 
+Typesense: search success 
+
+====================================
+```
+
+
+
+```bash
+$ ./searchEngineTest -e 'all' s -q 'C++开源游戏'
+MeillSearch: TotalHits: 8 
+url: https://hellogithub.com/repository/b899e2f98f07495aa20a7655b1d716a1 name: Cemu 
+url: https://hellogithub.com/repository/4e3f84780ad54eb69b16a95a48d955a5 name: azerothcore-wotlk 
+url: https://hellogithub.com/repository/4b0436482e2e468386f57bd43fd4ffb8 name: xemu 
+url: https://hellogithub.com/repository/fe47d51db0a24dff989863e4f172e085 name: yuzu 
+url: https://hellogithub.com/repository/ea8f86ffd45340f2a33b1a5a59d7543c name: citra 
+url: https://hellogithub.com/repository/8956118d16f94273a97fa793b73ce78c name: Cytopia 
+url: https://hellogithub.com/repository/d4384ff4b84a4fc6acfb7e7ae44b06ce name: ppsspp 
+url: https://hellogithub.com/repository/3603a18c7672445c88bbc404a960b69f name: flatbuffers 
+MeillSearch: search success 
+
+Typesense: TotalHits: 3 
+url: https://hellogithub.com/repository/b899e2f98f07495aa20a7655b1d716a1 name: Cemu 
+url: https://hellogithub.com/repository/4e3f84780ad54eb69b16a95a48d955a5 name: azerothcore-wotlk 
+url: https://hellogithub.com/repository/1d1e346df2174e9d83658d66d3ddfa34 name: Ryujinx 
+Typesense: search success 
+
+algolia: TotalHits: 16 
+url: https://hellogithub.com/repository/12cea4ffbed74106af665ae418cd9c49 name: osu 
+url: https://hellogithub.com/repository/90d09676b2ef41d3926c559f1cfe50bd name: godot 
+url: https://hellogithub.com/repository/477f8761bfba44c9af6db686de687997 name: Starward 
+url: https://hellogithub.com/repository/b899e2f98f07495aa20a7655b1d716a1 name: Cemu 
+url: https://hellogithub.com/repository/4e3f84780ad54eb69b16a95a48d955a5 name: azerothcore-wotlk 
+url: https://hellogithub.com/repository/fdfaaec2527844198dfd6b54cb20875d name: Playnite 
+url: https://hellogithub.com/repository/1d1e346df2174e9d83658d66d3ddfa34 name: Ryujinx 
+url: https://hellogithub.com/repository/fe47d51db0a24dff989863e4f172e085 name: yuzu 
+url: https://hellogithub.com/repository/ea8f86ffd45340f2a33b1a5a59d7543c name: citra 
+url: https://hellogithub.com/repository/d4384ff4b84a4fc6acfb7e7ae44b06ce name: ppsspp 
+url: https://hellogithub.com/repository/8956118d16f94273a97fa793b73ce78c name: Cytopia 
+url: https://hellogithub.com/repository/3603a18c7672445c88bbc404a960b69f name: flatbuffers 
+url: https://hellogithub.com/repository/c763339910d64e4cbeb41f7a382a5eae name: TowerDefense-GameFramework-Demo 
+url: https://hellogithub.com/repository/41f14032e54a4c5fb40e2773d0f73313 name: SteamTools 
+url: https://hellogithub.com/repository/4b0436482e2e468386f57bd43fd4ffb8 name: xemu 
+url: https://hellogithub.com/repository/fca5dff8568d4ea4ad81a8e9c01fabf3 name: terminal 
+algolia: search success 
+
+====================================
+```
 
 
 

@@ -8,6 +8,7 @@ require (
 )
 
 require (
+	github.com/algolia/algoliasearch-client-go/v3 v3.31.0 // indirect
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/bmizerany/perks v0.0.0-20230307044200-03f9df79da1e // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect

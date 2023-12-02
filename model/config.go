@@ -13,6 +13,7 @@ type Config struct {
 	DataFile    string       `yaml:"DataFile"`
 	MeillSearch *MeillSearch `yaml:"MeillSearch"`
 	Typesense   *Typesense   `yaml:"Typesense"`
+	Algolia     *Algolia     `yaml:"Algolia"`
 	TestRate    *TestRate    `yaml:"TestRate"`
 }
 type MeillSearch struct {
@@ -25,6 +26,12 @@ type Typesense struct {
 	Host      string `yaml:"Host"`
 	APIKey    string `yaml:"APIKey"`
 	IndexName string `yaml:"IndexName"`
+}
+
+type Algolia struct {
+	ApplicationId string `yaml:"ApplicationId"`
+	AdminApiKey   string `yaml:"AdminApiKey"`
+	IndexName     string `yaml:"IndexName"`
 }
 
 type TestRate struct {

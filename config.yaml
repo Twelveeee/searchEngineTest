@@ -8,8 +8,12 @@ Typesense:
     Host:  "http://localhost:8108"
     APIKey: "xvRbulP1P0Rw3h9ZFuT8yQH0sc35JLLj9SkwGPCyDbrkPDIp"
     IndexName: "article"
+Algolia:
+    ApplicationId: ""
+    AdminApiKey: ""
+    IndexName: "article"
 TestRate:
     # 每秒次数
-    PerSecond: 10
+    PerSecond: 100
     # 持续时间
-    Duration: 2
+    Duration: 60
